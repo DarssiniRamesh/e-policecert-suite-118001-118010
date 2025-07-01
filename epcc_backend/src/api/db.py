@@ -176,13 +176,12 @@ class AuditLog(Base):
     certificate_id = Column(Integer, ForeignKey("certificates.id"), nullable=True)
     action = Column(String, nullable=False)  # Log event type (register, login, etc)
     timestamp = Column(DateTime, default=func.now())
-    details = Column(Text, nullable=True)    # May hold summary (reason or payload data)
+    details = Column(Text, nullable=True)  # May hold summary (reason or payload data)
 
     # Relationships
     user = relationship("User", back_populates="audit_logs")
     application = relationship("CertificateApplication", back_populates="audit_logs")
     certificate = relationship("Certificate", back_populates="audit_logs")
-
 
 # PUBLIC_INTERFACE
 def get_db():

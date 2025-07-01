@@ -11,7 +11,7 @@ fi
 
 # Install Python dependencies (optional: comment if container builds handle this)
 if [ -f "requirements.txt" ]; then
-    pip install --no-cache-dir -r requirements.txt >> backend_startup.log 2>&1
+    pip install --no-cache-dir -r requirements.txt >> backend_startup.log 2>&1 || { echo "[pip failed]" >> backend_startup.log ; exit 1; }
 fi
 
 # Ensure uploads dir exists
@@ -19,4 +19,4 @@ mkdir -p uploads
 
 # Start FastAPI app using uvicorn
 echo "========== Backend manual startup at $(date) ==========" >> backend_startup.log
-uvicorn src.api.main:app --host 0.0.0.0 --port 3001 >> backend_startup.log 2>&1
+uvicorn src.api.main:app --host 0.0.0.0 --port 3001 >> backend_startup.log 2>&1 || { echo "[uvicorn failed to start]" >> backend_startup.log ; exit 2; }
