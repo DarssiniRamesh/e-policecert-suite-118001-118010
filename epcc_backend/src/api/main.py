@@ -231,8 +231,39 @@ app = FastAPI(
         {"name": "notification", "description": "Notifications API"},
         {"name": "document", "description": "Document upload/download endpoints"},
         {"name": "audit", "description": "Audit/event logs"},
-    ]
+    ],
 )
+
+# PUBLIC_INTERFACE
+@app.get("/openapi.json", include_in_schema=False)
+def get_openapi_schema():
+    """Explicit route for OpenAPI schema JSON.
+    Returns the OpenAPI spec as returned by app.openapi().
+    Purpose: guarantees that the docs URL (/openapi.json) is always valid and directly accessible,
+    even if a proxy is interfering with the FastAPI autodocs/settings.
+    """
+    return app.openapi()
+
+# PUBLIC_INTERFACE
+@app.get("/docs/help", tags=["docs"])
+def docs_usage_info(request: Request):
+    """Show FastAPI/OpenAPI documentation usage info and troubleshooting help.
+    Parameters: none.
+    Returns: Doc info and diagnostic tips for /docs and /openapi.json availability.
+    """
+    root_path = request.scope.get('root_path', '/')
+    return {
+        "info": "This backend exposes OpenAPI documentation at /docs (Swagger UI) and /openapi.json (OpenAPI schema in JSON).",
+        "openapi_url": "/openapi.json",
+        "swagger_ui_url": "/docs",
+        "root_path": root_path,
+        "notes": [
+            "If /openapi.json or /docs return 404, check your proxy/root_path settings.",
+            "If behind a proxy (nginx, etc.), ensure /openapi.json is proxied.",
+            "Backend health: try fetching GET /, then check /openapi.json.",
+            "If docs still missing, see FastAPI docs or contact support."
+        ]
+    }
 
 app.add_middleware(
     CORSMiddleware,
