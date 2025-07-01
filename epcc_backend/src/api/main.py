@@ -426,12 +426,12 @@ def register_user(
             role=UserRole.user,
         )
         db.add(user)
-        db.commit()
-        db.refresh(user)
-
-        # Log registration event in audit log for traceability
+        # Move audit log add BEFORE committing anything (to batch both insertions)
+        # We'll flush to get user.id for the audit log, then add log before a single commit
+        db.flush()  # SQLAlchemy flushes pending inserts without committing.
         db.add(AuditLog(user_id=user.id, action="register", timestamp=datetime.utcnow()))
-        db.commit()
+        db.commit()  # Commit both user and log at once, as a single transaction
+        db.refresh(user)
         return user
 
     except Exception as exc:
