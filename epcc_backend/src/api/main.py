@@ -328,6 +328,8 @@ app.add_middleware(
 # DB Health Check Endpoint
 # ------------------------
 # PUBLIC_INTERFACE
+from sqlalchemy import text
+
 @app.get("/health/db", tags=["admin"], summary="Check DB connectivity")
 def health_db_check():
     """
@@ -347,8 +349,9 @@ def health_db_check():
         }
     """
     try:
-        with engine.connect() as connection:  # Just open/close connection
-            connection.execute("SELECT 1")
+        with engine.connect() as connection:
+            # The recommended SQLAlchemy way: use sqlalchemy.text
+            connection.execute(text("SELECT 1"))
         return {"ok": True, "error": None}
     except SQLAlchemyError as e:
         return {"ok": False, "error": str(e)}
