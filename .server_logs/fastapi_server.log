@@ -60,3 +60,7 @@ INFO:     100.64.4.167:39090 - "GET /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:39094 - "GET /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:54238 - "GET /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:54254 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44580 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44590 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44604 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44616 - "GET /certificates HTTP/1.1" 200 OK
