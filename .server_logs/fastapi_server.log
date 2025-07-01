@@ -27,3 +27,14 @@ INFO:     100.64.4.167:47410 - "GET /applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:54102 - "OPTIONS /applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:54114 - "POST /applications HTTP/1.1" 422 Unprocessable Entity
 INFO:     100.64.4.167:34172 - "POST /applications HTTP/1.1" 422 Unprocessable Entity
+INFO:     100.64.4.167:54604 - "POST /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54620 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54624 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:42496 - "OPTIONS /admin/applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:42504 - "OPTIONS /admin/applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:42514 - "GET /admin/applications HTTP/1.1" 403 Forbidden
+INFO:     100.64.4.167:42530 - "GET /admin/applications HTTP/1.1" 403 Forbidden
+INFO:     100.64.4.167:42538 - "OPTIONS /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:42550 - "OPTIONS /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:42556 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:42560 - "GET /certificates HTTP/1.1" 200 OK
