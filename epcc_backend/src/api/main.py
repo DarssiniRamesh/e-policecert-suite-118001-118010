@@ -47,6 +47,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field, ValidationError
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -60,7 +61,8 @@ from .db import (
     AuditLog,
     UserRole,
     CertificateStatus,
-    init_db
+    init_db,
+    engine
 )
 
 # ----------------------------------------------------------------
@@ -322,6 +324,37 @@ app.add_middleware(
     allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
 
+# ------------------------
+# DB Health Check Endpoint
+# ------------------------
+# PUBLIC_INTERFACE
+@app.get("/health/db", tags=["admin"], summary="Check DB connectivity")
+def health_db_check():
+    """
+    PUBLIC_INTERFACE
+
+    Returns OK if the backend can establish a connection to the database.
+    Use for admin/ops healthchecks and debugging 502/internal server errors.
+    Response format:
+        {
+          "ok": true,
+          "error": null
+        }
+        OR
+        {
+          "ok": false,
+          "error": "error description"
+        }
+    """
+    try:
+        with engine.connect() as connection:  # Just open/close connection
+            connection.execute("SELECT 1")
+        return {"ok": True, "error": None}
+    except SQLAlchemyError as e:
+        return {"ok": False, "error": str(e)}
+    except Exception as e:
+        return {"ok": False, "error": f"Non-SQL error: {str(e)}"}
+
 @app.on_event("startup")
 def on_startup():
     """
@@ -353,7 +386,6 @@ def get_langs():
     Used for client-side language selector and diagnostics.
     """
     return {"languages": LANGS}
-
 
 # =============================
 # AUTH: Registration/Login endpoints
