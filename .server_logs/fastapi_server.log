@@ -46,3 +46,9 @@ INFO:     100.64.4.167:40146 - "GET /applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:40152 - "GET /applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:57538 - "GET /notifications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:57552 - "GET /notifications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54218 - "OPTIONS /documents/upload HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54230 - "POST /documents/upload HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54246 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54254 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51692 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51698 - "GET /applications HTTP/1.1" 200 OK
