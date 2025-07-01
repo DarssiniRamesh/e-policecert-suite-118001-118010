@@ -1,57 +1,53 @@
-# Backend Startup Log Missing – Diagnostic Summary
+# Backend Startup & Registration Error Diagnostic
 
-**Issue:**  
-No `backend_startup.log` file was found in the backend container at startup, so no logs could be analyzed for FastAPI/Uvicorn errors, import problems, or Python tracebacks.
+## Issue:
+No actionable Python traceback could be found in `backend_startup.log` because the file was not present; likely causes (startup never completed, permissions, or logging misdirection) remain unaddressed.
 
-## Root Causes & What to Check Next
+## Registration-Related 500 Error – Next Steps
 
-1. **Backend Never Started or Failed Before Logging:**
-   - The backend process may have failed before producing any log output.
-   - Check if the `start.sh` script is being invoked at container or service startup.
+- **There is no backend_startup.log or recent error stack from diagnose_logs.sh.**
+- Most probable scenarios for FastAPI+SQLAlchemy registration 500 status:
+  - IntegrityError at user creation (possibly duplicate email, table constraint)
+  - ValidationError in the UserRegister schema
+  - AttributeError or database connection error during ORM commit/refresh
+- Since registration calls both "db.add(user)" and "db.add(AuditLog...)" before a double commit, the failure could be within these operations.
 
-2. **Log Path or Permissions Issue:**
-   - The backend's start command (see `start.sh`) appends output/errors to `backend_startup.log`.
-   - Ensure the service has write permission in `epcc_backend/`.
+## What To Check Next
 
-3. **Misconfiguration in Entrypoint:**
-   - Verify the container/service entrypoint matches the provided `start.sh` script.
-   - Confirm `uvicorn ... >> backend_startup.log 2>&1` really points here and isn't redirected elsewhere.
+1. **FORCE* backend to (re-)generate logs:**
+   - From the backend directory, run:
+     ```bash
+     bash start.sh
+     cat backend_startup.log
+     ```
+   - *Confirm that backend_startup.log populates with any traceback or error—most important for POST /register!*
 
-4. **Immediate Crash (e.g. Missing Interpreter/Dependency):**
-   - If Python itself or `pip` is missing, the script might fail before logs are written.
+2. **Review DB File Existence & Permissions:**
+   - Does `epcc.sqlite3` (or your DB) exist?
+   - Is it writable by the backend service/container user?
 
-## Next Recommended Steps
+3. **Check for Table Schema Mismatches:**
+   - Run schema inspection on the DB (CLI or DB browser) to verify tables match SQLAlchemy models (esp. "users" and "audit_logs").
 
-- **Manual log generation:**  
-  Run this from the backend directory to attempt fresh log output:
-  ```bash
-  bash start.sh
-  cat backend_startup.log
-  ```
-  Or check for Docker/container error logs if running in a managed environment.
+4. **If using SQLite WAL mode or external DB, check that the connection string is correct and DB dependencies are installed.**
 
-- **Check for STDOUT logs or alternate log files:**  
-  Look for `uvicorn.log` or system/service logs via `journalctl` or `docker logs`.
+5. **POST /register with unique (new) email:**
+   - If you previously tried duplicate emails, clear DB or use a new test email.
 
-- **Verify requirements installation:**  
-  Ensure `requirements.txt` dependencies are installed as expected. See the deployment documentation for steps.
+6. **Look for any import/database-related errors in alternate logs, e.g.**
+   - uvicorn.log
+   - Docker `stdout` logs or journalctl
+   - `diagnose_logs.sh` output appended below
 
-- **Permissions:**  
-  Ensure the executing user in the container can write to the backend directory.
+## Additional Recommendation
 
-- **Process Status:**  
-  Run the following to confirm if FastAPI/Uvicorn is running or was killed:
-  ```bash
-  bash diagnose_ps.sh
-  ```
-
-## Reference
-
-See also:  
-- `diagnose_logs.sh` and `diagnose_ps.sh` for additional diagnostic commands.
-- `start.sh` for backend startup process and log output location.
+- If backend_startup.log remains missing, log directory/ownership is likely the issue—check the `start.sh` execution environment and directory structure.
+- If the log appears, inspect for the last Python traceback. Common error categories are:
+  - sqlalchemy.exc.IntegrityError (email constraint)
+  - sqlalchemy.exc.OperationalError (table or DB file)
+  - pydantic.error_wrappers.ValidationError
+  - AttributeError in custom register logic
 
 ---
 
-**Summary:**  
-No actionable tracebacks or errors could be found because the log was not present. The startup process should be reviewed and rerun to produce logs for further analysis.
+*Next steps:* Ensure backend_startup.log is created, then POST /register again, and immediately review its tail for the traceback. Attach that log output for more precise diagnosis.

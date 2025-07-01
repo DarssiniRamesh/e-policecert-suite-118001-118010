@@ -1,18 +1,15 @@
 /home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-INFO:     Started server process [50195]
+INFO:     Started server process [56115]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
-INFO:     100.64.4.167:37704 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:37712 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:37714 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:37730 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:37740 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:37752 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:38164 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:38168 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:48356 - "GET / HTTP/1.1" 200 OK
-INFO:     100.64.4.167:52082 - "GET /admin/auditlogs?limit=100 HTTP/1.1" 401 Unauthorized
-INFO:     100.64.4.167:34854 - "GET /health/db HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35362 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35370 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35382 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35374 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35390 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35404 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35412 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:35424 - "GET /openapi.json HTTP/1.1" 200 OK
