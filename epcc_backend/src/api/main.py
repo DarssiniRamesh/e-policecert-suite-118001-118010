@@ -40,7 +40,7 @@ import os
 from datetime import datetime, timedelta
 from typing import List, Optional
 from fastapi import (
-    FastAPI, Request, Depends, HTTPException, status, UploadFile, File, Form, Body
+    FastAPI, Request, Depends, HTTPException, status, UploadFile, File, Form, Body, Path
 )
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -409,7 +409,6 @@ def get_langs():
 # AUTH: Registration/Login endpoints
 # Endpoints for user registration, authentication, and token issuance.
 # =============================
-
 
 import traceback
 
@@ -864,6 +863,91 @@ def get_application_documents(
     if not app or (app.applicant_id != current_user.id and current_user.role not in [UserRole.admin, UserRole.officer]):
         raise HTTPException(status_code=404, detail="Not authorized or not found.")
     return db.query(Document).filter(Document.application_id == application_id).all()
+
+# ------------------------------------------
+# PATCH /users/{user_id}/role : Admin can change another user's role
+# ------------------------------------------
+@app.patch(
+    "/users/{user_id}/role",
+    response_model=SimpleResponse,
+    tags=["admin"],
+    summary="Update a user's role (Admin only)",
+    description=(
+        "Allows an administrator to change the role of any user (e.g., promote to admin/officer). "
+        "This endpoint is secure: only authenticated admins can update roles. "
+        "Input role value is validated. All actions are logged to the audit log."
+    ),
+    responses={
+        401: {"description": "Not authenticated"},
+        403: {"description": "Permission denied (not admin)"},
+        404: {"description": "User not found"},
+        422: {"description": "Validation error"}
+    }
+)
+def update_user_role(
+    user_id: int = Path(..., description="User ID to update"),
+    req: UserRoleUpdateRequest = None,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(require_roles(UserRole.admin)),
+):
+    """
+    PUBLIC_INTERFACE
+
+    Update another user's role (admin only).
+
+    Parameters:
+      - user_id (int): Path param, the target user's ID.
+      - req (UserRoleUpdateRequest): Body param, must contain a valid target role.
+      - admin_user (User): The authenticated admin performing this action.
+
+    Returns:
+      - SimpleResponse: with ok (bool) and a message. HTTP 404 if user not found,
+        HTTP 403 if not authorized, HTTP 200 with ok: true if update succeeds.
+    """
+    if req is None or not hasattr(req, "role"):
+        raise HTTPException(status_code=422, detail="Missing or invalid request body.")
+
+    # Disallow changing own role to avoid lockout hazards
+    if admin_user.id == user_id:
+        raise HTTPException(status_code=403, detail="Admins cannot change their own role.")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    try:
+        role_enum = UserRole(req.role)
+    except Exception:
+        raise HTTPException(status_code=422, detail=f"Role '{req.role}' is not allowed.")
+
+    if user.role == role_enum:
+        return SimpleResponse(ok=False, message=f"User already has role '{role_enum.value}'.")
+
+    old_role = user.role
+    user.role = role_enum
+    try:
+        db.add(user)
+        db.add(AuditLog(
+            user_id=admin_user.id,
+            action="user_role_update",
+            timestamp=datetime.utcnow(),
+            details=f"Changed user {user.id} role from '{old_role}' to '{role_enum.value}'"
+        ))
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        import sys, traceback
+        tb_str = traceback.format_exc()
+        try:
+            with open("backend_startup.log", "a") as logf:
+                logf.write(f"-- PATCH /users/{user_id}/role failed at {datetime.utcnow()} --\n")
+                logf.write(tb_str + "\n")
+        except Exception as log_exc:
+            print("Failed to write to backend_startup.log:", log_exc, file=sys.stderr)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(exc)}")
+
+    return SimpleResponse(ok=True, message=f"User {user.email} role updated to '{role_enum.value}'.")
+
 
 # ---------------------------------------------------------
 # AUDIT LOGS: endpoints for admin/officer audit viewing
