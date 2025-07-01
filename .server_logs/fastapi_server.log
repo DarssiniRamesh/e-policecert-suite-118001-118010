@@ -1,13 +1,297 @@
 /home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-INFO:     Started server process [60039]
+INFO:     Started server process [61045]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
-INFO:     100.64.4.167:35046 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:35038 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:35062 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:35074 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:35090 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:35106 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43030 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43046 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43056 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43058 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43062 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43064 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:43074 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44656 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44658 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44888 - "GET / HTTP/1.1" 200 OK
+INFO:     100.64.4.167:53552 - "POST /register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2423, in _determine_joins
+    self.primaryjoin = join_condition(
+                       ^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/util.py", line 123, in join_condition
+    return Join._join_condition(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1342, in _join_condition
+    cls._joincond_trim_constraints(
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1487, in _joincond_trim_constraints
+    raise exc.AmbiguousForeignKeysError(
+sqlalchemy.exc.AmbiguousForeignKeysError: Can't determine join between 'users' and 'certificate_applications'; tables have more than one foreign key constraint relationship between them. Please specify the 'onclause' of this join explicitly.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 410, in register_user
+    existing = db.query(User).filter(User.email == user_in.email).first()
+               ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2941, in query
+    return self._query_cls(entities, self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 275, in __init__
+    self._set_entities(entities)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 288, in _set_entities
+    coercions.expect(
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 389, in expect
+    insp._post_inspect
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1253, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2711, in _post_inspect
+    self._check_configure()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2388, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4204, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4245, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2405, in _post_configure_properties
+    prop.init()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 584, in init
+    self.do_init()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1644, in do_init
+    self._setup_join_conditions()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1884, in _setup_join_conditions
+    self._join_condition = jc = JoinCondition(
+                                ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2310, in __init__
+    self._determine_joins()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2467, in _determine_joins
+    raise sa_exc.AmbiguousForeignKeysError(
+sqlalchemy.exc.AmbiguousForeignKeysError: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
+INFO:     100.64.4.167:51302 - "POST /register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 410, in register_user
+    existing = db.query(User).filter(User.email == user_in.email).first()
+               ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2941, in query
+    return self._query_cls(entities, self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 275, in __init__
+    self._set_entities(entities)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 288, in _set_entities
+    coercions.expect(
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 389, in expect
+    insp._post_inspect
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1253, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2711, in _post_inspect
+    self._check_configure()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2388, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4204, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4241, in _do_configure_registries
+    raise e
+sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[User(users)]'. Original exception was: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
+INFO:     100.64.4.167:51308 - "POST /register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 410, in register_user
+    existing = db.query(User).filter(User.email == user_in.email).first()
+               ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2941, in query
+    return self._query_cls(entities, self, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 275, in __init__
+    self._set_entities(entities)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 288, in _set_entities
+    coercions.expect(
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 389, in expect
+    insp._post_inspect
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1253, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+                                           ^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2711, in _post_inspect
+    self._check_configure()
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2388, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4204, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4241, in _do_configure_registries
+    raise e
+sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[User(users)]'. Original exception was: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.

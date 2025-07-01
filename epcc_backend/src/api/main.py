@@ -395,6 +395,8 @@ def get_langs():
 # Endpoints for user registration, authentication, and token issuance.
 # =============================
 
+import traceback
+
 @app.post("/register", response_model=UserResponse, tags=["auth"], summary="Register new user")
 def register_user(
     user_in: UserRegister,
@@ -406,23 +408,44 @@ def register_user(
 
     Register a new user (default role: user).
     Checks for existing email, hashes password, creates User in DB.
+
+    This version wraps logic in try/except and logs any exception with traceback
+    to both console and backend_startup.log so POST /register failures are always visible in logs.
     """
-    existing = db.query(User).filter(User.email == user_in.email).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="User already exists.")
-    user = User(
-        email=user_in.email,
-        hashed_password=get_password_hash(user_in.password),
-        full_name=user_in.full_name,
-        role=UserRole.user,
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    # Log registration event in audit log for traceability
-    db.add(AuditLog(user_id=user.id, action="register", timestamp=datetime.utcnow()))
-    db.commit()
-    return user
+    import sys
+
+    try:
+        existing = db.query(User).filter(User.email == user_in.email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="User already exists.")
+        user = User(
+            email=user_in.email,
+            hashed_password=get_password_hash(user_in.password),
+            full_name=user_in.full_name,
+            role=UserRole.user,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        # Log registration event in audit log for traceability
+        db.add(AuditLog(user_id=user.id, action="register", timestamp=datetime.utcnow()))
+        db.commit()
+        return user
+    except Exception as exc:
+        # Print and write full error traceback to both console and log file for diagnosis
+        tb_str = traceback.format_exc()
+        print("REGISTER ERROR TRACEBACK:", file=sys.stderr)
+        print(tb_str, file=sys.stderr)
+        try:
+            with open("backend_startup.log", "a") as logf:
+                logf.write("\n---- /register EXCEPTION at " + str(datetime.utcnow()) + " ----\n")
+                logf.write(tb_str + "\n")
+        except Exception as log_exc:
+            print("Failed to write to backend_startup.log:", log_exc, file=sys.stderr)
+        return JSONResponse(
+            status_code=500,
+            content={"error": "Registration failed.", "reason": str(exc), "traceback": tb_str}
+        )
 
 @app.post("/token", response_model=Token, tags=["auth"], summary="Login and get JWT token")
 def login_for_access_token(
