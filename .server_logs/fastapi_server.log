@@ -52,3 +52,4 @@ INFO:     100.64.4.167:54246 - "GET /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:54254 - "GET /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:51692 - "GET /applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:51698 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41870 - "GET /admin/applications HTTP/1.1" 401 Unauthorized
