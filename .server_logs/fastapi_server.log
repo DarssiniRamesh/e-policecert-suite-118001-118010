@@ -19,3 +19,11 @@ INFO:     100.64.4.167:51062 - "POST /auth/login HTTP/1.1" 404 Not Found
 INFO:     100.64.4.167:39278 - "POST /auth/login HTTP/1.1" 404 Not Found
 INFO:     100.64.4.167:49126 - "GET /docs HTTP/1.1" 200 OK
 INFO:     100.64.4.167:49134 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39842 - "POST /token HTTP/1.1" 200 OK
+INFO:     100.64.4.167:47398 - "OPTIONS /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:47404 - "OPTIONS /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:47408 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:47410 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54102 - "OPTIONS /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:54114 - "POST /applications HTTP/1.1" 422 Unprocessable Entity
+INFO:     100.64.4.167:34172 - "POST /applications HTTP/1.1" 422 Unprocessable Entity
