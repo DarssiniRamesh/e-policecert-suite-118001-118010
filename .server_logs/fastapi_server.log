@@ -38,3 +38,11 @@ INFO:     100.64.4.167:42538 - "OPTIONS /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:42550 - "OPTIONS /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:42556 - "GET /certificates HTTP/1.1" 200 OK
 INFO:     100.64.4.167:42560 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40110 - "OPTIONS /notifications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40120 - "OPTIONS /notifications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40128 - "GET /notifications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40130 - "GET /notifications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40146 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40152 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:57538 - "GET /notifications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:57552 - "GET /notifications HTTP/1.1" 200 OK
