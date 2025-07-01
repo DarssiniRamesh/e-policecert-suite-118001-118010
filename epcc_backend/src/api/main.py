@@ -418,6 +418,7 @@ def register_user(
         existing = db.query(User).filter(User.email == user_in.email).first()
         if existing:
             raise HTTPException(status_code=400, detail="User already exists.")
+
         user = User(
             email=user_in.email,
             hashed_password=get_password_hash(user_in.password),
@@ -427,21 +428,35 @@ def register_user(
         db.add(user)
         db.commit()
         db.refresh(user)
+
         # Log registration event in audit log for traceability
         db.add(AuditLog(user_id=user.id, action="register", timestamp=datetime.utcnow()))
         db.commit()
         return user
+
     except Exception as exc:
-        # Print and write full error traceback to both console and log file for diagnosis
         tb_str = traceback.format_exc()
-        print("REGISTER ERROR TRACEBACK:", file=sys.stderr)
-        print(tb_str, file=sys.stderr)
+        log_msg = (
+            f"\n---- /register EXCEPTION at {datetime.utcnow()} ----\n"
+            f"{tb_str}\n"
+            f"Exception details: {exc}\n"
+        )
+
+        # Log to both stdout and backend_startup.log (for persistent diagnostics)
+        # Ensures message and traceback go to both real screen and log (even if logging is misconfigured)
+        print("REGISTER ERROR DETECTED. See below for traceback and details.", file=sys.stdout)
+        print(log_msg, file=sys.stdout)
+        print(log_msg, file=sys.stderr)
+
         try:
             with open("backend_startup.log", "a") as logf:
-                logf.write("\n---- /register EXCEPTION at " + str(datetime.utcnow()) + " ----\n")
-                logf.write(tb_str + "\n")
+                logf.write(log_msg)
         except Exception as log_exc:
             print("Failed to write to backend_startup.log:", log_exc, file=sys.stderr)
+            print("Error traceback originally was:", file=sys.stderr)
+            print(tb_str, file=sys.stderr)
+
+        # Always return informative JSON error to client
         return JSONResponse(
             status_code=500,
             content={"error": "Registration failed.", "reason": str(exc), "traceback": tb_str}

@@ -27,4 +27,7 @@ fi
 
 # Start FastAPI app using uvicorn
 echo "========== Backend manual startup at $(date) ==========" >> backend_startup.log
+
+# Redirect ALL output of uvicorn (including stdout and stderr) to backend_startup.log for persistent debugging
+# This allows both manual print() output and Python tracebacks to be captured
 uvicorn src.api.main:app --host 0.0.0.0 --port 3001 >> backend_startup.log 2>&1 || { echo "[uvicorn failed to start]" >> backend_startup.log ; exit 2; }
