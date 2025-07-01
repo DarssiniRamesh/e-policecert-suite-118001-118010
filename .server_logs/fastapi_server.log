@@ -46,3 +46,15 @@ INFO:     100.64.4.167:32884 - "OPTIONS /admin/applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:32890 - "OPTIONS /admin/applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:32898 - "GET /admin/applications HTTP/1.1" 200 OK
 INFO:     100.64.4.167:32908 - "GET /admin/applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:32918 - "OPTIONS /admin/applications/1 HTTP/1.1" 200 OK
+INFO:     100.64.4.167:32922 - "PATCH /admin/applications/1 HTTP/1.1" 200 OK
+INFO:     100.64.4.167:32936 - "GET /admin/applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:58774 - "OPTIONS /admin/applications/2 HTTP/1.1" 200 OK
+INFO:     100.64.4.167:58778 - "PATCH /admin/applications/2 HTTP/1.1" 200 OK
+INFO:     100.64.4.167:58794 - "GET /admin/applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39064 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39066 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39070 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39076 - "GET /applications HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39090 - "GET /certificates HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39094 - "GET /certificates HTTP/1.1" 200 OK
