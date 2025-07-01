@@ -1,0 +1,4 @@
+{
+    "command": "pytest",
+    "working_directory": "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend"
+}
