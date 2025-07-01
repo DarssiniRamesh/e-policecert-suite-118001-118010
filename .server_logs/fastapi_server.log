@@ -1,55 +1,17 @@
 /home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-INFO:     Started server process [75288]
+INFO:     Started server process [92275]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
-INFO:     100.64.4.167:41840 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:41850 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:41858 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:41864 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:41876 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:41882 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:34348 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:34358 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:36122 - "OPTIONS /auth/login HTTP/1.1" 200 OK
-INFO:     100.64.4.167:36124 - "POST /auth/login HTTP/1.1" 404 Not Found
-INFO:     100.64.4.167:51062 - "POST /auth/login HTTP/1.1" 404 Not Found
-INFO:     100.64.4.167:39278 - "POST /auth/login HTTP/1.1" 404 Not Found
-INFO:     100.64.4.167:49126 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:49134 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:39842 - "POST /token HTTP/1.1" 200 OK
-INFO:     100.64.4.167:47398 - "OPTIONS /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:47404 - "OPTIONS /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:47408 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:47410 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54102 - "OPTIONS /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54114 - "POST /applications HTTP/1.1" 422 Unprocessable Entity
-INFO:     100.64.4.167:34172 - "POST /applications HTTP/1.1" 422 Unprocessable Entity
-INFO:     100.64.4.167:54604 - "POST /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54620 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54624 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:42496 - "OPTIONS /admin/applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:42504 - "OPTIONS /admin/applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:42514 - "GET /admin/applications HTTP/1.1" 403 Forbidden
-INFO:     100.64.4.167:42530 - "GET /admin/applications HTTP/1.1" 403 Forbidden
-INFO:     100.64.4.167:42538 - "OPTIONS /certificates HTTP/1.1" 200 OK
-INFO:     100.64.4.167:42550 - "OPTIONS /certificates HTTP/1.1" 200 OK
-INFO:     100.64.4.167:42556 - "GET /certificates HTTP/1.1" 200 OK
-INFO:     100.64.4.167:42560 - "GET /certificates HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40110 - "OPTIONS /notifications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40120 - "OPTIONS /notifications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40128 - "GET /notifications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40130 - "GET /notifications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40146 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40152 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:57538 - "GET /notifications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:57552 - "GET /notifications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54218 - "OPTIONS /documents/upload HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54230 - "POST /documents/upload HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54246 - "GET /certificates HTTP/1.1" 200 OK
-INFO:     100.64.4.167:54254 - "GET /certificates HTTP/1.1" 200 OK
-INFO:     100.64.4.167:51692 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:51698 - "GET /applications HTTP/1.1" 200 OK
-INFO:     100.64.4.167:41870 - "GET /admin/applications HTTP/1.1" 401 Unauthorized
+INFO:     100.64.4.167:36034 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:36050 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:60418 - "GET /me HTTP/1.1" 401 Unauthorized
+INFO:     100.64.4.167:38228 - "POST /token HTTP/1.1" 200 OK
+INFO:     100.64.4.167:38236 - "GET /me HTTP/1.1" 200 OK
+INFO:     100.64.4.167:36612 - "OPTIONS /register HTTP/1.1" 200 OK
+INFO:     100.64.4.167:36616 - "POST /register HTTP/1.1" 200 OK
+INFO:     100.64.4.167:55162 - "POST /token HTTP/1.1" 200 OK
+INFO:     100.64.4.167:40100 - "GET /me HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50608 - "PATCH /users/2/role HTTP/1.1" 403 Forbidden
