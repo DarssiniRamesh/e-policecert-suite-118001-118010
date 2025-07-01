@@ -77,7 +77,11 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
 
     # Relationships
-    applications = relationship("CertificateApplication", back_populates="applicant")
+    applications = relationship(
+        "CertificateApplication",
+        back_populates="applicant",
+        foreign_keys="CertificateApplication.applicant_id"
+    )
     certificates = relationship("Certificate", back_populates="owner")
     notifications = relationship("Notification", back_populates="user")
     audit_logs = relationship("AuditLog", back_populates="user")
