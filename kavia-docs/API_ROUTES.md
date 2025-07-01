@@ -1,299 +1,200 @@
-# E-Police Certificate Backend API Documentation
+# E-Police Certificate Backend API – Route Documentation
 
-This document provides a detailed reference for all REST API endpoints implemented in the FastAPI-based backend (`epcc_backend`). Each route is described by path, HTTP method, parameters, authentication/role requirements, request/response schemas, and a summary of its purpose.
+This document lists all implemented API routes in the `epcc_backend` (FastAPI) backend, with details on HTTP method, path, expected parameters (query, path, body), authentication/roles, and a summary of each route's purpose.
 
-**Source:** `epcc_backend/src/api/main.py`  
-_Last update: [automatically generated]_
+_Last generated directly from backend code. For precise payloads and schemas, refer to code and OpenAPI docs._
 
 ---
 
-## Table of Contents
+## Index
 
-- [Authentication & User Management](#authentication--user-management)
+- [General/Health Endpoints](#generalhealth-endpoints)
+- [Authentication & Registration](#authentication--registration)
+- [User Endpoints](#user-endpoints)
 - [Certificate Applications](#certificate-applications)
-- [Certificate Operations](#certificate-operations)
-- [Admin/Officer Endpoints](#adminofficer-endpoints)
-- [Document Upload/Download](#document-uploaddownload)
+- [Certificates](#certificates)
+- [Documents (Uploads/Downloads)](#documents-upload-download)
 - [Notifications](#notifications)
+- [Admin/Officer Endpoints](#adminofficer-endpoints)
 - [Audit Logs](#audit-logs)
-- [Health & Utility Endpoints](#health--utility-endpoints)
+- [Error Handling](#error-handling)
 
 ---
 
-## Authentication & User Management
+## General/Health Endpoints
 
-### POST `/register`
-**Summary:** Register a new user (default role: `user`)
-- **Body:** JSON (`UserRegister` schema: `{email, full_name, password (min 6 chars)}`)
-- **Response:** `UserResponse` (user object: id, email, full_name, role, is_active, created_at)
-- **Permissions:** None (open)
-- **Errors:** 400 if user already exists, 500 on server error
-- **Side Effects:** Logs registration in audit log, writes to `backend_startup.log` on error
+### `GET /`
+- **Summary**: Healthcheck endpoint. Backend is running.
+- **Auth**: None
+- **Response**: `{ "message": "Healthy" }`
 
----
+### `GET /health/db`
+- **Summary**: Check DB connectivity.
+- **Auth**: None (admin tag)
+- **Response**: `{ "ok": true/false, "error": str | null }`
 
-### POST `/token`
-**Summary:** User login; returns a JWT token
-- **Body:** Form (`username` (email), `password`)
-- **Response:** `{access_token: str, token_type: "bearer"}`
-- **Permissions:** None
-- **Errors:** 401 for invalid credentials, 403 for inactive accounts
-- **Audit Log:** User login event
+
+### `GET /docs/lang`
+- **Summary**: Get supported languages.
+- **Auth**: None
+- **Response**: `{ "languages": ["en", "fr", "ar"] }`
 
 ---
 
-### GET `/me`
-**Summary:** Get current user profile
-- **Authentication:** Bearer JWT required
-- **Response:** `UserResponse` (full user details)
-- **Permissions:** Any authenticated user
+## Authentication & Registration
+
+### `POST /register`
+- **Summary**: Register new user.
+- **Body**: JSON `{ email: string, full_name?: string, password: string }`
+- **Returns**: User object
+- **Notes**: Fails if user/email exists.
+
+### `POST /token`
+- **Summary**: Login and get JWT token (OAuth2 password flow).
+- **Body**: Form `{ username: str, password: str }` (_not_ JSON!)  
+- **Returns**: `{ access_token: string, token_type: "bearer" }`
+- **Notes**: Attach JWT as `Authorization: Bearer <token>` to protected endpoints.
 
 ---
 
-### GET `/docs/lang`
-**Summary:** List supported languages (for translation/localization)
-- **Response:** `{languages: ["en", "fr", "ar"]}`
-- **Permissions:** None
+## User Endpoints
+
+### `GET /me`
+- **Summary**: Get my profile (user from JWT).
+- **Auth**: Bearer JWT required.
+- **Returns**: Full user object: `{ id, email, full_name, role, is_active, created_at }`
 
 ---
 
 ## Certificate Applications
 
-### GET `/applications`
-**Summary:** List certificate applications submitted by current user
-- **Authentication:** Bearer JWT required
-- **Response:** `List[CertificateApplicationResponse]`
-- **Permissions:** Authenticated user
+### `GET /applications`
+- **Summary**: List current user's certificate applications.
+- **Auth**: Bearer JWT required.
+- **Returns**: Array of applications for logged-in user.
+
+### `POST /applications`
+- **Summary**: Submit a new certificate application.
+- **Auth**: Bearer JWT required.
+- **Body**: JSON `{ details: string }`
+- **Returns**: Application object (pending status).
+
+### `GET /applications/{application_id}`
+- **Summary**: Retrieve single application by ID.
+- **Auth**: Bearer JWT. Only applicant, officers, or admin allowed.
+- **Response**: Application object.
 
 ---
 
-### POST `/applications`
-**Summary:** Submit a new certificate application
-- **Authentication:** Bearer JWT required
-- **Body:** JSON, `{details: str (max 2048 chars)}`
-- **Response:** `CertificateApplicationResponse`
-- **Permissions:** Authenticated user
-- **Side Effects:** Triggers notification, logs submission in audit logs
+## Certificates
+
+### `GET /certificates`
+- **Summary**: List all certificates owned by current user.
+- **Auth**: Bearer JWT required.
+- **Response**: Array of certificates.
+
+### `GET /certificates/{certificate_id}`
+- **Summary**: Get certificate info by ID (if owned OR officer/admin).
+- **Auth**: Bearer JWT required.
+- **Response**: Certificate object.
 
 ---
 
-### GET `/applications/{application_id}`
-**Summary:** Get application by ID, if owned or officer/admin
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `application_id: int`
-- **Response:** `CertificateApplicationResponse`
-- **Permissions:** Owner of the application, or officer/admin
+## Documents (Upload/Download)
 
----
+### `POST /documents/upload`
+- **Summary**: Upload document to a specific application.
+- **Auth**: Bearer JWT, owner of application.
+- **Body**: Multi-part form:
+    - `application_id` (int, required)
+    - `file` (file, required)
+- **Response**: Document object
 
-### GET `/applications/{application_id}/documents`
-**Summary:** List all documents for an application
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `application_id: int`
-- **Response:** `List[DocumentResponse]`
-- **Permissions:** Application owner, officer, or admin
+### `GET /documents/download/{filename}`
+- **Summary**: Download a document by server-stored filename.
+- **Auth**: Bearer JWT. Only allowed if file owned/officer/admin (owner check, to be expanded for further auditing).
+- **Returns**: File (octet-stream/binary data).
 
----
-
-## Certificate Operations
-
-### GET `/certificates`
-**Summary:** List certificates owned by current user
-- **Authentication:** Bearer JWT required
-- **Response:** `List[CertificateResponse]`
-- **Permissions:** Authenticated user
-
----
-
-### GET `/certificates/{certificate_id}`
-**Summary:** View a certificate by ID (must be owner, officer, or admin)
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `certificate_id: int`
-- **Response:** `CertificateResponse`
-- **Permissions:** Owner, officer, or admin
-
----
-
-## Document Upload/Download
-
-### POST `/documents/upload`
-**Summary:** Upload a document to a certificate application
-- **Authentication:** Bearer JWT required
-- **Form Data:** `application_id: int`, `file: UploadFile`
-- **Response:** `DocumentResponse` (file metadata, download URL)
-- **Permissions:** Must be the owner of the target application
-
----
-
-### GET `/documents/download/{filename}`
-**Summary:** Download previously uploaded document
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `filename: str`
-- **Response:** File download (`application/octet-stream`)
-- **Permissions:** Document owner, officer/admin (checks advised)
+### `GET /applications/{application_id}/documents`
+- **Summary**: List all documents for a certificate application.
+- **Auth**: Bearer JWT. Owner, admin, or officer required.
+- **Response**: List of document objects.
 
 ---
 
 ## Notifications
 
-### GET `/notifications`
-**Summary:** Get all notifications for current user (newest first)
-- **Authentication:** Bearer JWT required
-- **Response:** `List[NotificationResponse]`
-- **Permissions:** Authenticated user
+### `GET /notifications`
+- **Summary**: List all notifications for current user.
+- **Auth**: Bearer JWT required.
+- **Response**: Array of notifications.
 
----
-
-### PATCH `/notifications/{notification_id}/markread`
-**Summary:** Mark a notification as read
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `notification_id: int`
-- **Response:** `NotificationResponse`
+### `PATCH /notifications/{notification_id}/markread`
+- **Summary**: Mark notification as read for this user.
+- **Auth**: Bearer JWT required.
+- **Returns**: The updated notification object.
 
 ---
 
 ## Admin/Officer Endpoints
 
-> These endpoints **require** elevated roles (officer or admin).
+(All require JWT and user role to be admin or officer.)
 
-### GET `/admin/applications`
-**Summary:** List all certificate applications
-- **Authentication:** Bearer JWT required
-- **Permissions:** Officer, Admin
-- **Response:** `List[CertificateApplicationResponse]`
+### `GET /admin/applications`
+- **Summary**: List all certificate applications (all users).
+- **Auth**: Bearer JWT, admin or officer only.
+- **Returns**: Array of all applications.
 
----
+### `PATCH /admin/applications/{application_id}`
+- **Summary**: Officer/admin updates application status (approve, reject, etc).
+- **Auth**: Bearer JWT, admin/officer only.
+- **Body**: `{ status: string }` (certificate status)
+- **Returns**: Updated application object.
 
-### PATCH `/admin/applications/{application_id}`
-**Summary:** Officer/Admin updates application status (approve/reject)
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `application_id: int`
-- **Body:** `{status: "approved"|"rejected"|...}`
-- **Permissions:** Officer, Admin
-- **Response:** `CertificateApplicationResponse`
-- **Side Effects:** Sends notification to applicant, logs audit
+### `POST /admin/applications/{application_id}/certificates`
+- **Summary**: Issue certificate for application (must be approved).
+- **Auth**: Bearer JWT, admin/officer only.
+- **Body**: `{ expiry_date?: ISODate string }` (optional)
+- **Returns**: New certificate object.
 
----
-
-### POST `/admin/applications/{application_id}/certificates`
-**Summary:** Issue a certificate for an application
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `application_id: int`
-- **Body:** `expiry_date: Optional[datetime]` (optional)
-- **Permissions:** Officer, Admin (application must be approved)
-- **Response:** `CertificateResponse`
+### `PATCH /admin/certificates/{certificate_id}/revoke`
+- **Summary**: Revoke a certificate and give a reason.
+- **Auth**: Bearer JWT, admin/officer only.
+- **Body**: `{ reason: string }`
+- **Returns**: Revoked certificate object.
 
 ---
 
-### PATCH `/admin/certificates/{certificate_id}/revoke`
-**Summary:** Revoke a certificate (provide reason)
-- **Authentication:** Bearer JWT required
-- **Path Parameters:** `certificate_id: int`
-- **Body:** `{reason: str}`
-- **Permissions:** Officer, Admin
-- **Response:** `CertificateResponse`
+## Audit Logs
+
+### `GET /admin/auditlogs`
+- **Summary**: Return latest audit log entries (defaults: latest 100).
+- **Auth**: Bearer JWT, admin/officer only.
+- **Query**: limit (default/optional)
+- **Returns**: Array of audit log records.
 
 ---
 
-### GET `/admin/auditlogs`
-**Summary:** View recent audit logs (default 100)
-- **Authentication:** Bearer JWT required
-- **Permissions:** Officer, Admin
-- **Query Parameters:** `limit: int` (default: 100)
-- **Response:** `List[AuditLogResponse]`
+## Error Handling
 
----
+- All endpoints use FastAPI exception handling. Error responses:
+    - `401`: Not authenticated (missing/expired/wrong JWT)
+    - `403`: Permission denied (wrong role)
+    - `422`: Invalid request schema/body
+    - `404`: Not found or access denied for resource
 
-## Health & Utility Endpoints
-
-### GET `/health/db`
-**Summary:** DB health check (admin/ops, monitors basic DB connectivity)
-- **Response:** `{ok: bool, error: Optional[str]}`
-- **Permissions:** None
-
----
-
-### GET `/`
-**Summary:** Basic backend health (shows that the backend is running)
-- **Response:** `{message: "Healthy"}`
-- **Permissions:** None
-
----
-
-## Models and Schemas (Summarized)
-
-**UserRegister**  
-- email: EmailStr  
-- full_name: Optional[str]  
-- password: str (min 6 chars)  
-
-**UserResponse**  
-- id: int  
-- email: EmailStr  
-- full_name: Optional[str]  
-- role: str  
-- is_active: bool  
-- created_at: datetime  
-
-**CertificateApplicationRequest**  
-- details: str (max 2048 chars)  
-
-**CertificateApplicationResponse**  
-- id: int  
-- status: str  
-- details: Optional[str]  
-- submission_time: datetime  
-- reviewed_by_id: Optional[int]  
-
-**CertificateResponse**  
-- id: int  
-- certificate_number: str  
-- status: str  
-- issue_date: datetime  
-- expiry_date: Optional[datetime]  
-- owner_id: int  
-
-**NotificationResponse**  
-- id: int  
-- message: str  
-- is_read: bool  
-- created_at: datetime  
-
-**DocumentResponse**  
-- id: int  
-- filename: str  
-- url: str  
-- uploaded_at: datetime  
-- content_type: str  
-
-**AuditLogResponse**  
-- id: int  
-- user_id: Optional[int]  
-- application_id: Optional[int]  
-- certificate_id: Optional[int]  
-- action: str  
-- timestamp: datetime  
-- details: Optional[str]  
-
----
-
-## Authentication & Role Requirements Quick Reference
-
-- Endpoints without explicit authentication (`/`, `/health/db`, `/docs/lang`, `/register`, `/token`) are open or public.
-- All other endpoints **require** a valid JWT token in the `Authorization: Bearer <token>` header.
-- Admin/Officer endpoints require role-based permissions, enforced with dependency injections:
-    - Officer or Admin: `/admin/*` endpoints
-    - User endpoints: current user or resource owner
+- Most errors return JSON: `{ detail: string }` or `{ error: string, reason: string, traceback?: string }` on critical internal errors (e.g., registration).
 
 ---
 
 ## Notes
 
-- All API error responses are returned in consistent JSON format (some errors translated based on Accept-Language).
-- State-changing endpoints are logged in the audit log.
-- Uploaded files are stored in backend-local `uploads/` directory and require access control.
-- The OpenAPI/Swagger UI (auto-generated) is available at `/docs` on the running backend.
+- All protected endpoints require passing a valid JWT token as `Authorization: Bearer <token>`.
+- Admin/officer endpoints strictly require proper roles (access will be denied otherwise).
+- All user/profile/app/cert status changes are recorded in the audit log implicitly (backend).
+- For schemas of objects (User, Application, Certificate, etc.) refer to backend `/docs` path.
+- Document endpoints save files under local server `uploads/` directory.
 
 ---
 
-_This file provides the canonical reference for backend/frontend integration. For further details on database models, see `src/api/db.py` or refer to the OpenAPI spec hosted at `/docs` when the backend is running._
+_Last updated: [Automated extraction from backend codebase (src/api/main.py)]_
