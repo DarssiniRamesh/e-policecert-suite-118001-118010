@@ -1,133 +1,14 @@
 /home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-INFO:     Started server process [66013]
+INFO:     Started server process [66492]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
-INFO:     100.64.4.167:37822 - "GET /health/db HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40534 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40544 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40548 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40556 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40566 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40568 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:40578 - "GET /health/db HTTP/1.1" 200 OK
-REGISTER ERROR DETECTED. See below for traceback and details.
-
----- /register EXCEPTION at 2025-07-01 19:03:14.600824 ----
-Traceback (most recent call last):
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2423, in _determine_joins
-    self.primaryjoin = join_condition(
-                       ^^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/util.py", line 123, in join_condition
-    return Join._join_condition(
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1342, in _join_condition
-    cls._joincond_trim_constraints(
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1487, in _joincond_trim_constraints
-    raise exc.AmbiguousForeignKeysError(
-sqlalchemy.exc.AmbiguousForeignKeysError: Can't determine join between 'users' and 'certificate_applications'; tables have more than one foreign key constraint relationship between them. Please specify the 'onclause' of this join explicitly.
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 418, in register_user
-    existing = db.query(User).filter(User.email == user_in.email).first()
-               ^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2941, in query
-    return self._query_cls(entities, self, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 275, in __init__
-    self._set_entities(entities)
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 288, in _set_entities
-    coercions.expect(
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 389, in expect
-    insp._post_inspect
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1253, in __get__
-    obj.__dict__[self.__name__] = result = self.fget(obj)
-                                           ^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2711, in _post_inspect
-    self._check_configure()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2388, in _check_configure
-    _configure_registries({self.registry}, cascade=True)
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4204, in _configure_registries
-    _do_configure_registries(registries, cascade)
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4245, in _do_configure_registries
-    mapper._post_configure_properties()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2405, in _post_configure_properties
-    prop.init()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 584, in init
-    self.do_init()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1644, in do_init
-    self._setup_join_conditions()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1884, in _setup_join_conditions
-    self._join_condition = jc = JoinCondition(
-                                ^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2310, in __init__
-    self._determine_joins()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2467, in _determine_joins
-    raise sa_exc.AmbiguousForeignKeysError(
-sqlalchemy.exc.AmbiguousForeignKeysError: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
-
-Exception details: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
-
-
----- /register EXCEPTION at 2025-07-01 19:03:14.600824 ----
-Traceback (most recent call last):
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2423, in _determine_joins
-    self.primaryjoin = join_condition(
-                       ^^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/util.py", line 123, in join_condition
-    return Join._join_condition(
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1342, in _join_condition
-    cls._joincond_trim_constraints(
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/selectable.py", line 1487, in _joincond_trim_constraints
-    raise exc.AmbiguousForeignKeysError(
-sqlalchemy.exc.AmbiguousForeignKeysError: Can't determine join between 'users' and 'certificate_applications'; tables have more than one foreign key constraint relationship between them. Please specify the 'onclause' of this join explicitly.
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 418, in register_user
-    existing = db.query(User).filter(User.email == user_in.email).first()
-               ^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2941, in query
-    return self._query_cls(entities, self, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 275, in __init__
-    self._set_entities(entities)
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 288, in _set_entities
-    coercions.expect(
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 389, in expect
-    insp._post_inspect
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1253, in __get__
-    obj.__dict__[self.__name__] = result = self.fget(obj)
-                                           ^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2711, in _post_inspect
-    self._check_configure()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2388, in _check_configure
-    _configure_registries({self.registry}, cascade=True)
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4204, in _configure_registries
-    _do_configure_registries(registries, cascade)
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4245, in _do_configure_registries
-    mapper._post_configure_properties()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2405, in _post_configure_properties
-    prop.init()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 584, in init
-    self.do_init()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1644, in do_init
-    self._setup_join_conditions()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1884, in _setup_join_conditions
-    self._join_condition = jc = JoinCondition(
-                                ^^^^^^^^^^^^^^
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2310, in __init__
-    self._determine_joins()
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 2467, in _determine_joins
-    raise sa_exc.AmbiguousForeignKeysError(
-sqlalchemy.exc.AmbiguousForeignKeysError: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
-
-Exception details: Could not determine join condition between parent/child tables on relationship User.applications - there are multiple foreign key paths linking the tables.  Specify the 'foreign_keys' argument, providing a list of those columns which should be counted as containing a foreign key reference to the parent table.
-
-INFO:     100.64.4.167:60488 - "POST /register HTTP/1.1" 500 Internal Server Error
+INFO:     100.64.4.167:50564 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50574 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50588 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50598 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50606 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50614 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:50618 - "GET /openapi.json HTTP/1.1" 200 OK
