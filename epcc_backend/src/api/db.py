@@ -41,8 +41,9 @@ DATABASE_URL = os.environ.get("EPCC_DATABASE_URL", "sqlite:///./epcc.sqlite3")
 # SQLAlchemy DB engine and session factory. SQLite disables check_same_thread for FastAPI async compatibility.
 engine = create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-)
+)  # Main DB engine, special param for SQLite+threads with FastAPI
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 # Enum Types (used for DB model columns)
 class UserRole(str, enum.Enum):
@@ -104,7 +105,8 @@ class CertificateApplication(Base):
         "Certificate",
         uselist=False,
         back_populates="application"
-    )  # One-to-one application to certificate link
+    )   # One-to-one application to certificate link
+
     documents = relationship("Document", back_populates="application")
     audit_logs = relationship("AuditLog", back_populates="application")
 

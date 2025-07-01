@@ -1,3 +1,41 @@
+""" 
+E-Police Certificate Backend API (epcc_backend/src/api/main.py)
+
+Main FastAPI application entry point for the E-Police Certificate system.
+Handles all service endpoints for user registration/authentication, certificate application submission, approval/issuance, document upload/download,
+notifications, and audit logging.
+
+App structure:
+    - Loads environment variables and main settings
+    - Defines all API Pydantic models (request/response)
+    - Sets up JWT/OAuth2 authentication and password hashing
+    - Registers FastAPI routes for:
+        • Auth (register, login, JWT issue)
+        • User management (profile, role-check, applications/certificates)
+        • Certificate applications (submit, list, get by ID, officer/admin review)
+        • Certificate issue/revoke (admin/officer only)
+        • Notification viewing and marking as read
+        • Document upload/download tied to applications
+        • Audit log retrieval (admin/officer only)
+    - Multilingual support: status/error messages and certain endpoints localize based on Accept-Language
+    - Central exception handler translates error details for common authentication/authorization flows
+App configuration:
+    - Loads SECRET_KEY and DB URL via environment (with reasonable dev defaults)
+    - Supports CORS for all origins during development (adjust for production)
+    - Database initialized with SQLAlchemy ORM; SQLite used unless env override.
+    - All uploads saved under uploads/ directory
+
+For new collaborators:
+    - Refer to endpoint docstrings and inline comments for route purposes & auth rules.
+    - All API errors use FastAPI HTTPException for consistent error handling.
+    - Data validation is performed with Pydantic models and class configs.
+    - Startup event auto-generates DB schema and uploads dir — no manual migration needed.
+    - See README, deployment and docs for endpoint usage and sample flows.
+
+See also: src/api/db.py (ORM models and DB layer), requirements.txt, deployment docs.
+
+"""
+
 import os
 from datetime import datetime, timedelta
 from typing import List, Optional
@@ -25,9 +63,10 @@ from .db import (
     init_db
 )
 
-# --------------------------
-# JWT tokens, security constants and password hashing config
-# --------------------------
+# ----------------------------------------------------------------
+# JWT tokens, security constants and password hashing configuration
+# ----------------------------------------------------------------
+# These drive authentication/security for all endpoints. SECRET_KEY should be replaced for production!
 SECRET_KEY = os.environ.get("EPCC_SECRET_KEY", "devsecret")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 2  # 2 days by default
@@ -35,11 +74,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 2  # 2 days by default
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Supported languages for user-facing messages
+# --------------------------
+# Multilingual support for user-facing messages.
+# If new status or error keys are added, update the dictionaries below.
+# Language is detected from Accept-Language header; default is EN.
 LANGS = ['en', 'fr', 'ar']
 DEFAULT_LANG = 'en'
 
-# Dictionary of translated messages for basic status/error keys
 LANG_MESSAGES = {
     "en": {
         "register_success": "Registration successful.",
@@ -72,8 +113,9 @@ def get_message(key: str, lang: str) -> str:
     return LANG_MESSAGES.get(lang, LANG_MESSAGES[DEFAULT_LANG]).get(key, key)
 
 # ---------------------------------
-# Utilities: password hashing, JWT token, language parsing
+# Utilities: password hashing, JWT handling, request language parsing
 # ---------------------------------
+# Used by authentication and app error handling for all credential/token flows.
 
 def get_password_hash(password: str) -> str:
     """Return a secure password hash for storage."""
@@ -104,8 +146,9 @@ def get_lang(request: Request) -> str:
     return lang
 
 # ---------------------------------
-# User Authentication & Role-Checking Dependencies
+# User Authentication & Role-Checking Dependencies and Pydantic token/user schemas
 # ---------------------------------
+# These are FastAPI dependencies and helper types for all endpoints requiring authentication.
 
 class Token(BaseModel):
     """JWT Bearer token returned to client after login/registration."""
@@ -113,7 +156,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    """Used internally to decode relevant info from JWT."""
+    """Used internally to decode relevant info from JWT for fast token validation."""
     user_id: Optional[int] = None
     email: Optional[str] = None
     role: Optional[str] = None
@@ -128,7 +171,7 @@ class UserRegister(UserBase):
     password: str = Field(..., min_length=6)
 
 class UserResponse(UserBase):
-    """API response schema for full user details."""
+    """API response schema for full user details. Used by registration/login/profile endpoints."""
     id: int
     role: str
     is_active: bool
@@ -186,11 +229,11 @@ def require_roles(*roles):
 
 # --------------------
 # Pydantic Models for API Exchange: Certificate, Application, Notification, etc.
+# These schemas control API request/response serialization and validation.
 # --------------------
 class CertificateApplicationRequest(BaseModel):
     """Used for new certificate application creation."""
     details: str = Field(..., max_length=2048)
-    # Optionally: can be extended to add more fields
 
 class CertificateApplicationResponse(BaseModel):
     """Serialized certificate application for API responses."""
@@ -250,7 +293,7 @@ class DocumentResponse(BaseModel):
         orm_mode = True
 
 # ----------------------
-# Main FastAPI app definition and setup
+# Main FastAPI app definition and settings, including OpenAPI metadata, tags, and CORS middleware.
 # ----------------------
 app = FastAPI(
     title="E-Police Certificate Backend",
@@ -273,7 +316,7 @@ app = FastAPI(
     ]
 )
 
-# Allow all CORS for frontend/backend local dev (adjust for production!)
+# Allow all CORS for frontend/backend local dev (adjust for production deployments as needed!)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
@@ -284,8 +327,9 @@ def on_startup():
     """
     PUBLIC_INTERFACE
 
-    FastAPI startup hook: initializes DB schema and uploads dir, ensuring
-    backend is ready to serve requests after cold start/deployment.
+    FastAPI startup hook: initializes DB schema and uploads directory, ensuring
+    backend is ready to serve requests after a cold start or deployment.
+    Run this only once on process startup, not per-request.
     """
     init_db()
     os.makedirs("uploads", exist_ok=True)
@@ -296,6 +340,7 @@ def root():
     PUBLIC_INTERFACE
 
     Healthcheck endpoint. Shows backend service is running.
+    Simple check used by orchestrators and uptime monitoring.
     """
     return {"message": "Healthy"}
 
@@ -305,12 +350,15 @@ def get_langs():
     PUBLIC_INTERFACE
 
     API endpoint to enumerate supported languages for translation.
+    Used for client-side language selector and diagnostics.
     """
     return {"languages": LANGS}
 
-# -------------------------
+
+# =============================
 # AUTH: Registration/Login endpoints
-# -------------------------
+# Endpoints for user registration, authentication, and token issuance.
+# =============================
 
 @app.post("/register", response_model=UserResponse, tags=["auth"], summary="Register new user")
 def register_user(
@@ -322,7 +370,7 @@ def register_user(
     PUBLIC_INTERFACE
 
     Register a new user (default role: user).
-    Checks for existing email and hashes password.
+    Checks for existing email, hashes password, creates User in DB.
     """
     existing = db.query(User).filter(User.email == user_in.email).first()
     if existing:
@@ -366,6 +414,10 @@ def login_for_access_token(
     db.commit()
     return {"access_token": access_token, "token_type": "bearer"}
 
+# --------------------------------------
+# USER/PROFILE: endpoints to fetch profile, and endpoints providing the current user's view into the system.
+# --------------------------------------
+
 @app.get("/me", response_model=UserResponse, tags=["user"], summary="Get my profile")
 def get_me(
     current_user: User = Depends(get_current_user),
@@ -378,7 +430,8 @@ def get_me(
     return current_user
 
 # ------------------------------------
-# User: view their applications and related documents
+# APPLICATIONS: all certificate application creation and query endpoints
+# (User-facing and officer/admin-facing)
 # ------------------------------------
 @app.get("/applications", response_model=List[CertificateApplicationResponse], tags=["application"])
 def list_my_applications(
@@ -406,19 +459,19 @@ def submit_application(
     Submit a new certificate application for the logged-in user.
     Sets status to pending, initializes records, and delivers a notification.
     """
-    app = CertificateApplication(
+    app_obj = CertificateApplication(
         applicant_id=current_user.id,
         details=req.details,
         status=CertificateStatus.pending,
         submission_time=datetime.utcnow()
     )
-    db.add(app)
+    db.add(app_obj)
     db.commit()
-    db.refresh(app)
+    db.refresh(app_obj)
     # Log event for auditing
     db.add(AuditLog(
         user_id=current_user.id,
-        application_id=app.id,
+        application_id=app_obj.id,
         action="application_submitted",
         timestamp=datetime.utcnow(),
         details="User submitted certificate application"
@@ -431,7 +484,7 @@ def submit_application(
         created_at=datetime.utcnow()
     ))
     db.commit()
-    return app
+    return app_obj
 
 @app.get("/applications/{application_id}", response_model=CertificateApplicationResponse, tags=["application"])
 def get_application(
@@ -451,7 +504,7 @@ def get_application(
     return app
 
 # -----------------------------------------
-# Certificate endpoints: own, by application, etc.
+# CERTIFICATES: endpoints for listing and getting certificates by user, officer or admin
 # -----------------------------------------
 
 @app.get("/certificates", response_model=List[CertificateResponse], tags=["certificate"])
@@ -484,7 +537,7 @@ def get_certificate(
     return cert
 
 # --------------------------------------
-# OFFICER/ADMIN OPERATIONS
+# OFFICER/ADMIN OPERATIONS: endpoints accessible to admin and officers only; use require_roles
 # --------------------------------------
 
 @app.get("/admin/applications", response_model=List[CertificateApplicationResponse], tags=["admin"])
@@ -604,7 +657,7 @@ def admin_revoke_certificate(
     return cert
 
 # ------------------------------------------------
-# Notifications: user endpoints
+# NOTIFICATIONS: endpoints for users to get and update notification states
 # ------------------------------------------------
 @app.get("/notifications", response_model=List[NotificationResponse], tags=["notification"])
 def get_notifications(
@@ -637,7 +690,9 @@ def mark_notification_read(
     return note
 
 # ------------------------------------------
-# DOCUMENT: Upload and Download endpoints
+# DOCUMENTS: Upload and Download endpoints for application-linked files
+# Security: Only file owner, officer or admin can access respective endpoints
+# Files are placed in uploads/, direct download supported (ensure permissions!)
 # ------------------------------------------
 UPLOADS_DIR = "uploads"
 
@@ -653,6 +708,7 @@ async def upload_document(
 
     Upload a document to a specific application owned by the current user.
     Stores file on disk (uploads/) and makes it available for future download.
+    Ownership is strictly enforced; user must own the given application.
     """
     app = db.query(CertificateApplication).filter(
         CertificateApplication.id == application_id,
@@ -660,7 +716,7 @@ async def upload_document(
     ).first()
     if not app:
         raise HTTPException(status_code=404, detail="Application not found or not owned by you.")
-    # Save file to disk with unique timestamp prefix
+    # Save file to disk with unique timestamp prefix for filename safety
     os.makedirs(UPLOADS_DIR, exist_ok=True)
     filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{file.filename}"
     path = os.path.join(UPLOADS_DIR, filename)
@@ -694,12 +750,14 @@ def download_document(
     PUBLIC_INTERFACE
 
     Download a previously uploaded document file.
-    File must exist on local disk.
+    File must exist on local disk (“uploads/” directory by default).
+    Access should require document ownership (in production environments consider checks/auditing).
     """
     path = os.path.join(UPLOADS_DIR, filename)
     if not os.path.isfile(path):
         raise HTTPException(status_code=404, detail="File not found.")
     return FileResponse(path, media_type='application/octet-stream', filename=filename)
+
 
 @app.get("/applications/{application_id}/documents", response_model=List[DocumentResponse], tags=["document"])
 def get_application_documents(
@@ -711,6 +769,7 @@ def get_application_documents(
     PUBLIC_INTERFACE
 
     List all documents for an application (requires owner, admin or officer).
+    Used for viewing receipts/proofs submitted with user's certificate application.
     """
     app = db.query(CertificateApplication).filter(CertificateApplication.id == application_id).first()
     if not app or (app.applicant_id != current_user.id and current_user.role not in [UserRole.admin, UserRole.officer]):
@@ -735,13 +794,14 @@ def get_audit_logs(
     return logs
 
 # --------------------------------------
-# MULTILINGUAL ERROR HANDLING
+# EXCEPTION HANDLING: Multilingual error formatting for UX; extend as app expands.
 # --------------------------------------
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
     """
     HTTP error handler for common application exceptions.
     Translates some messages to user's preferred language.
+    Extend msg_key/name set above to expand the dictionary of translated error keys.
     """
     lang = get_lang(request)
     msg_key = None
