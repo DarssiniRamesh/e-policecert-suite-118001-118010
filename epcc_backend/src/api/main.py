@@ -50,6 +50,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from pydantic import constr
 
 from .db import (
     get_db,
@@ -283,6 +284,19 @@ class AuditLogResponse(BaseModel):
     class Config:
         orm_mode = True
 
+# -------------------------------
+# User Role Update (PATCH) Schema
+# -------------------------------
+
+class UserRoleUpdateRequest(BaseModel):
+    """Request body for PATCH /users/{user_id}/role."""
+    role: constr(strip_whitespace=True) = Field(..., description="New role for the user (e.g., 'admin', 'user', 'officer')")
+
+class SimpleResponse(BaseModel):
+    """Generic API success/failure result."""
+    ok: bool
+    message: str
+
 class DocumentResponse(BaseModel):
     """Response schema for uploaded document info."""
     id: int
@@ -391,9 +405,11 @@ def get_langs():
     return {"languages": LANGS}
 
 # =============================
+
 # AUTH: Registration/Login endpoints
 # Endpoints for user registration, authentication, and token issuance.
 # =============================
+
 
 import traceback
 
