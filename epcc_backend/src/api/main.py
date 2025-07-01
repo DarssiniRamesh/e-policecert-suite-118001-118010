@@ -181,7 +181,7 @@ class UserResponse(UserBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # PUBLIC_INTERFACE
 def get_current_user(
@@ -247,7 +247,7 @@ class CertificateApplicationResponse(BaseModel):
     reviewed_by_id: Optional[int] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CertificateResponse(BaseModel):
     """API response schema for certificate records."""
@@ -259,7 +259,7 @@ class CertificateResponse(BaseModel):
     owner_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class NotificationResponse(BaseModel):
     """API response schema for notifications."""
@@ -269,7 +269,7 @@ class NotificationResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AuditLogResponse(BaseModel):
     """API response schema for audit log rows."""
@@ -282,7 +282,7 @@ class AuditLogResponse(BaseModel):
     details: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # -------------------------------
 # User Role Update (PATCH) Schema
@@ -306,7 +306,7 @@ class DocumentResponse(BaseModel):
     content_type: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ----------------------
 # Main FastAPI app definition and settings, including OpenAPI metadata, tags, and CORS middleware.
