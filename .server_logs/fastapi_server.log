@@ -1,13 +1,31 @@
 /home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'orm_mode' has been renamed to 'from_attributes'
   warnings.warn(message, UserWarning)
-INFO:     Started server process [63516]
+INFO:     Started server process [64316]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
-INFO:     100.64.4.167:44886 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:44892 - "HEAD /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:44906 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:44918 - "GET /docs HTTP/1.1" 200 OK
-INFO:     100.64.4.167:44926 - "GET /openapi.json HTTP/1.1" 200 OK
-INFO:     100.64.4.167:44934 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41762 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41774 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41784 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41792 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41808 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41812 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:41816 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:55616 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:55630 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:44136 - "GET / HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51888 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51886 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51894 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51910 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51918 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51920 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51922 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51938 - "HEAD /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51942 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51952 - "GET /docs HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51964 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:51974 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     100.64.4.167:39346 - "GET /health/db HTTP/1.1" 200 OK
+INFO:     100.64.4.167:33212 - "GET /health/db HTTP/1.1" 200 OK

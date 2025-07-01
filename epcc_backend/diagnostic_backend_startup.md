@@ -3,51 +3,52 @@
 ## Issue:
 No actionable Python traceback could be found in `backend_startup.log` because the file was not present; likely causes (startup never completed, permissions, or logging misdirection) remain unaddressed.
 
-## Registration-Related 500 Error – Next Steps
+## ERROR SUMMARY (from backend diagnostics)
 
-- **There is no backend_startup.log or recent error stack from diagnose_logs.sh.**
-- Most probable scenarios for FastAPI+SQLAlchemy registration 500 status:
-  - IntegrityError at user creation (possibly duplicate email, table constraint)
-  - ValidationError in the UserRegister schema
-  - AttributeError or database connection error during ORM commit/refresh
-- Since registration calls both "db.add(user)" and "db.add(AuditLog...)" before a double commit, the failure could be within these operations.
+- backend_startup.log is missing or empty, so Python tracebacks for `/register` and `/health/db` failures cannot be found there.
+- This suggests one (or more) of the following:
+    1. The backend crashed on startup and logging output was not written, OR
+    2. The FastAPI/Uvicorn server output is not routed to backend_startup.log (logging misdirection), OR
+    3. File/directory permissions prevent log file creation (particularly if running in non-root or Docker context).
+    4. The backend never started at all due to a fatal error.
 
-## What To Check Next
+## Symptom: `/register` returns 500, `/health/db` fails ("Failed to fetch")
 
-1. **FORCE* backend to (re-)generate logs:**
-   - From the backend directory, run:
-     ```bash
-     bash start.sh
-     cat backend_startup.log
-     ```
-   - *Confirm that backend_startup.log populates with any traceback or error—most important for POST /register!*
+- The registration endpoint is coded to log **all** exceptions to both stdout/stderr and backend_startup.log.
+- If backend_startup.log and diagnose_logs.sh remain empty, this suggests the registration function or even the entire backend never got to run: a severe startup or DB issue.
 
-2. **Review DB File Existence & Permissions:**
-   - Does `epcc.sqlite3` (or your DB) exist?
-   - Is it writable by the backend service/container user?
+## Top Probable Causes Based on Current Evidence
 
-3. **Check for Table Schema Mismatches:**
-   - Run schema inspection on the DB (CLI or DB browser) to verify tables match SQLAlchemy models (esp. "users" and "audit_logs").
+- **Database Not Accessible or Missing:**
+  - The default DB is `epcc.sqlite3` in the backend directory.
+  - If this file does NOT exist, or is not writable by the backend, all DB-dependent endpoints will fail.
+  - If the DB schema did not initialize (e.g., missing tables, migration not run), then registration and health check will raise OperationalError (`no such table: users`, etc).
 
-4. **If using SQLite WAL mode or external DB, check that the connection string is correct and DB dependencies are installed.**
+- **Network/Container Misconfiguration:**
+  - If running under Docker (not shown here), the volume or directory with the SQLite file could be missing or read-only.
+  - If a custom `EPCC_DATABASE_URL` is set to a non-existent resource, OperationalError is expected.
 
-5. **POST /register with unique (new) email:**
-   - If you previously tried duplicate emails, clear DB or use a new test email.
+## Diagnosing Next Steps (Required for Further Progress)
 
-6. **Look for any import/database-related errors in alternate logs, e.g.**
-   - uvicorn.log
-   - Docker `stdout` logs or journalctl
-   - `diagnose_logs.sh` output appended below
-
-## Additional Recommendation
-
-- If backend_startup.log remains missing, log directory/ownership is likely the issue—check the `start.sh` execution environment and directory structure.
-- If the log appears, inspect for the last Python traceback. Common error categories are:
-  - sqlalchemy.exc.IntegrityError (email constraint)
-  - sqlalchemy.exc.OperationalError (table or DB file)
-  - pydantic.error_wrappers.ValidationError
-  - AttributeError in custom register logic
+1. **Run `start.sh` and observe whether backend_startup.log is created and populated.**
+   - If it is not, there is a fatal environment, directory, or Python error.
+2. **Inspect (or create) the SQLite DB file:** Does ./epcc.sqlite3 exist, and is it accessible with read/write permissions?
+3. **Check that the models are being initialized:** According to DB logic, all tables should auto-create on startup via `init_db()` in FastAPI `@app.on_event('startup')`. If this fails, check logs or rerun startup script in debug mode.
+4. **If possible, invoke registration with a clean (never-used) email, and after, check for new error output in backend_startup.log.**
 
 ---
 
-*Next steps:* Ensure backend_startup.log is created, then POST /register again, and immediately review its tail for the traceback. Attach that log output for more precise diagnosis.
+#### Actionable Advice
+
+- If the backend_startup.log remains absent after hitting /register, log creation or directory permissions are 99% likely to be at fault. Fix permissions.
+- If it appears, tail the last lines—look for errors like:
+  - `sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: users`
+  - `sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed`
+  - `sqlite3.ProgrammingError`
+  - Python exceptions for missing imports or DB engine setup failures
+
+If you see `'no such table'` or `'unable to open database file'` in logs, the DB setup/init sequence is broken. If nothing logs at all, check file paths and start.sh/uvicorn invocation logic.
+
+---
+
+*Next steps:* Ensure backend_startup.log is created and writable on backend startup. Hit /register or /health/db, then review the tail of that log for a Python traceback and error summary. Attach that log or error for next round diagnostics.
