@@ -35,6 +35,8 @@ Traceback (most recent call last):
   File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/config.py", line 435, in load
     self.loaded_app = import_from_string(self.app)
                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
   File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
     module = importlib.import_module(module_str)
              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -47,9 +49,6 @@ Traceback (most recent call last):
   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
   File "<frozen importlib._bootstrap_external>", line 995, in exec_module
   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 50, in <module>
-    from jose import JWTError, jwt
-  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/venv/lib/python3.12/site-packages/jose.py", line 546
-    print decrypt(deserialize_compact(jwt), {'k':key},
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-SyntaxError: Missing parentheses in call to 'print'. Did you mean print(...)?
+  File "/home/kavia/workspace/code-generation/e-policecert-suite-118001-118010/epcc_backend/src/api/main.py", line 51, in <module>
+    from passlib.context import CryptContext
+ModuleNotFoundError: No module named 'passlib'
