@@ -1,7 +1,16 @@
 [flake8]
-max-line-length = 120
+# --- What to scan ---
 exclude = .git,__pycache__,build,dist,venv
-ignore = E203,E266,E501,W503,F403,E301,E302,E303,E304,E305,E306,W291,W292,W293,W391
-per-file-ignores = __init__.py:F401
+
+# --- What to report ---
+#   E9  – syntax / indentation / parsing errors (from pycodestyle)
+#   F   – undefined names, unused imports/variables, etc. (from pyflakes)
+# Remove ‘E’, ‘W’, ‘C’, ‘B’, … if you truly want *only* syntax issues.
+# Keep B (bugbear) if you still want likely-bug warnings.
+select = E9,F
+
+# --- Misc settings you may still want ---
+max-line-length = 120
+per-file-ignores =
+    __init__.py:F401
 max-complexity = 18
-select = B,C,E,F,W,T4,B9
