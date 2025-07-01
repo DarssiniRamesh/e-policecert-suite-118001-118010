@@ -26,18 +26,20 @@ from .db import (
 )
 
 # --------------------------
-# JWT, Security, Constants
+# JWT tokens, security constants and password hashing config
 # --------------------------
 SECRET_KEY = os.environ.get("EPCC_SECRET_KEY", "devsecret")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 2  # 2 days
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 2  # 2 days by default
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Supported languages for user-facing messages
 LANGS = ['en', 'fr', 'ar']
 DEFAULT_LANG = 'en'
 
+# Dictionary of translated messages for basic status/error keys
 LANG_MESSAGES = {
     "en": {
         "register_success": "Registration successful.",
@@ -63,51 +65,70 @@ LANG_MESSAGES = {
 }
 
 def get_message(key: str, lang: str) -> str:
+    """
+    Return a translated string for a given key/language.
+    If translation is missing, fallback to English or the key itself.
+    """
     return LANG_MESSAGES.get(lang, LANG_MESSAGES[DEFAULT_LANG]).get(key, key)
 
 # ---------------------------------
-# Utility: password, jwt, roles
+# Utilities: password hashing, JWT token, language parsing
 # ---------------------------------
 
 def get_password_hash(password: str) -> str:
+    """Return a secure password hash for storage."""
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Return True if the provided plain password matches the hashed version."""
     return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """
+    Generate a JWT access token containing the provided payload data.
+    Optionally set expiration (default: 48h).
+    """
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def get_lang(request: Request) -> str:
+    """
+    Parse HTTP request for 'accept-language' header.
+    Falls back to default if value not among supported codes.
+    """
     lang = request.headers.get('accept-language', DEFAULT_LANG)
     if lang not in LANGS:
         lang = DEFAULT_LANG
     return lang
 
 # ---------------------------------
-# User, Auth, Bearer, Roles
+# User Authentication & Role-Checking Dependencies
 # ---------------------------------
 
 class Token(BaseModel):
+    """JWT Bearer token returned to client after login/registration."""
     access_token: str
     token_type: str
 
 class TokenData(BaseModel):
+    """Used internally to decode relevant info from JWT."""
     user_id: Optional[int] = None
     email: Optional[str] = None
     role: Optional[str] = None
 
 class UserBase(BaseModel):
+    """Base schema for user-related requests/responses."""
     email: EmailStr
     full_name: Optional[str] = None
 
 class UserRegister(UserBase):
+    """Request schema for user registration."""
     password: str = Field(..., min_length=6)
 
 class UserResponse(UserBase):
+    """API response schema for full user details."""
     id: int
     role: str
     is_active: bool
@@ -120,7 +141,13 @@ class UserResponse(UserBase):
 def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
-    """Decode JWT token and return User object or raise."""
+    """
+    PUBLIC_INTERFACE
+
+    FastAPI dependency. Checks JWT Bearer authorization token in the request,
+    decodes it, validates user presence in DB, and returns User ORM instance.
+    Raises 401 if unauthorized.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials, login required",
@@ -139,7 +166,13 @@ def get_current_user(
 
 # PUBLIC_INTERFACE
 def require_roles(*roles):
-    """Dependency to require one of the roles for a route."""
+    """
+    PUBLIC_INTERFACE
+
+    Returns a FastAPI dependency which ensures that the current user has one
+    of the allowed role(s). Raises 403 if not permitted.
+    Example: @app.route(..., dependencies=[Depends(require_roles('admin'))])
+    """
     def _role_dependency(
         current_user: User = Depends(get_current_user)
     ):
@@ -152,13 +185,15 @@ def require_roles(*roles):
     return _role_dependency
 
 # --------------------
-# Certificate models
+# Pydantic Models for API Exchange: Certificate, Application, Notification, etc.
 # --------------------
 class CertificateApplicationRequest(BaseModel):
+    """Used for new certificate application creation."""
     details: str = Field(..., max_length=2048)
-    # Possibly: supporting data fields here
+    # Optionally: can be extended to add more fields
 
 class CertificateApplicationResponse(BaseModel):
+    """Serialized certificate application for API responses."""
     id: int
     status: str
     details: Optional[str]
@@ -169,6 +204,7 @@ class CertificateApplicationResponse(BaseModel):
         orm_mode = True
 
 class CertificateResponse(BaseModel):
+    """API response schema for certificate records."""
     id: int
     certificate_number: str
     status: str
@@ -180,6 +216,7 @@ class CertificateResponse(BaseModel):
         orm_mode = True
 
 class NotificationResponse(BaseModel):
+    """API response schema for notifications."""
     id: int
     message: str
     is_read: bool
@@ -189,6 +226,7 @@ class NotificationResponse(BaseModel):
         orm_mode = True
 
 class AuditLogResponse(BaseModel):
+    """API response schema for audit log rows."""
     id: int
     user_id: Optional[int]
     application_id: Optional[int]
@@ -201,6 +239,7 @@ class AuditLogResponse(BaseModel):
         orm_mode = True
 
 class DocumentResponse(BaseModel):
+    """Response schema for uploaded document info."""
     id: int
     filename: str
     url: str
@@ -211,7 +250,7 @@ class DocumentResponse(BaseModel):
         orm_mode = True
 
 # ----------------------
-# FastAPI app startup
+# Main FastAPI app definition and setup
 # ----------------------
 app = FastAPI(
     title="E-Police Certificate Backend",
@@ -234,6 +273,7 @@ app = FastAPI(
     ]
 )
 
+# Allow all CORS for frontend/backend local dev (adjust for production!)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
@@ -241,24 +281,35 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    """PUBLIC_INTERFACE: Initialize database on startup."""
+    """
+    PUBLIC_INTERFACE
+
+    FastAPI startup hook: initializes DB schema and uploads dir, ensuring
+    backend is ready to serve requests after cold start/deployment.
+    """
     init_db()
     os.makedirs("uploads", exist_ok=True)
 
 @app.get("/")
 def root():
-    """PUBLIC_INTERFACE
-    Returns server health."""
+    """
+    PUBLIC_INTERFACE
+
+    Healthcheck endpoint. Shows backend service is running.
+    """
     return {"message": "Healthy"}
 
 @app.get("/docs/lang", response_model=dict, tags=["auth"])
 def get_langs():
-    """PUBLIC_INTERFACE
-    Returns supported languages."""
+    """
+    PUBLIC_INTERFACE
+
+    API endpoint to enumerate supported languages for translation.
+    """
     return {"languages": LANGS}
 
 # -------------------------
-# AUTH: Registration/Login
+# AUTH: Registration/Login endpoints
 # -------------------------
 
 @app.post("/register", response_model=UserResponse, tags=["auth"], summary="Register new user")
@@ -267,8 +318,11 @@ def register_user(
     request: Request,
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Register a new user (default 'user' role).
+    """
+    PUBLIC_INTERFACE
+
+    Register a new user (default role: user).
+    Checks for existing email and hashes password.
     """
     existing = db.query(User).filter(User.email == user_in.email).first()
     if existing:
@@ -282,7 +336,7 @@ def register_user(
     db.add(user)
     db.commit()
     db.refresh(user)
-    # Log registration
+    # Log registration event in audit log for traceability
     db.add(AuditLog(user_id=user.id, action="register", timestamp=datetime.utcnow()))
     db.commit()
     return user
@@ -293,8 +347,11 @@ def login_for_access_token(
     request: Request = None,
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Login to get JWT token (username: email, password: password).
+    """
+    PUBLIC_INTERFACE
+
+    Authenticates user, issues JWT token for use in future Bearer requests.
+    User is identified by email. Account must be active.
     """
     lang = get_lang(request)
     user = db.query(User).filter(User.email == form_data.username).first()
@@ -313,21 +370,25 @@ def login_for_access_token(
 def get_me(
     current_user: User = Depends(get_current_user),
 ):
-    """PUBLIC_INTERFACE
-    Return info about current authenticated user.
+    """
+    PUBLIC_INTERFACE
+
+    Returns the data of the currently authenticated user (from JWT token).
     """
     return current_user
 
 # ------------------------------------
-# User: view their applications/docs
+# User: view their applications and related documents
 # ------------------------------------
 @app.get("/applications", response_model=List[CertificateApplicationResponse], tags=["application"])
 def list_my_applications(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    List certificate applications submitted by user.
+    """
+    PUBLIC_INTERFACE
+
+    Returns a list of all certificate applications submitted by current user.
     """
     apps = db.query(CertificateApplication).filter(CertificateApplication.applicant_id == current_user.id).all()
     return apps
@@ -339,8 +400,12 @@ def submit_application(
     request: Request = None,
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Submit new certificate application as the logged-in user."""
+    """
+    PUBLIC_INTERFACE
+
+    Submit a new certificate application for the logged-in user.
+    Sets status to pending, initializes records, and delivers a notification.
+    """
     app = CertificateApplication(
         applicant_id=current_user.id,
         details=req.details,
@@ -350,7 +415,7 @@ def submit_application(
     db.add(app)
     db.commit()
     db.refresh(app)
-    # Log event
+    # Log event for auditing
     db.add(AuditLog(
         user_id=current_user.id,
         application_id=app.id,
@@ -374,8 +439,11 @@ def get_application(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Get single application by id, only owner or reviewers allowed.
+    """
+    PUBLIC_INTERFACE
+
+    Retrieve a single application by its ID if the user is owner, officer, or admin.
+    Enforces access control.
     """
     app = db.query(CertificateApplication).filter(CertificateApplication.id == application_id).first()
     if not app or (app.applicant_id != current_user.id and current_user.role not in [UserRole.officer, UserRole.admin]):
@@ -383,7 +451,7 @@ def get_application(
     return app
 
 # -----------------------------------------
-# Certificate: own and by application ID
+# Certificate endpoints: own, by application, etc.
 # -----------------------------------------
 
 @app.get("/certificates", response_model=List[CertificateResponse], tags=["certificate"])
@@ -391,8 +459,10 @@ def list_my_certificates(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    List certificates owned by current user.
+    """
+    PUBLIC_INTERFACE
+
+    List all certificates owned by the authenticated user.
     """
     certs = db.query(Certificate).filter(Certificate.owner_id == current_user.id).all()
     return certs
@@ -403,8 +473,10 @@ def get_certificate(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Get a single certificate (if owned or admin/officer).
+    """
+    PUBLIC_INTERFACE
+
+    Get a single certificate by ID if owned or if the user is officer/admin.
     """
     cert = db.query(Certificate).filter(Certificate.id == certificate_id).first()
     if not cert or (cert.owner_id != current_user.id and current_user.role not in [UserRole.officer, UserRole.admin]):
@@ -420,8 +492,10 @@ def admin_list_applications(
     db: Session = Depends(get_db),
     _: User = Depends(require_roles(UserRole.admin, UserRole.officer)),
 ):
-    """PUBLIC_INTERFACE
-    List all certificate applications (admin/officer access).
+    """
+    PUBLIC_INTERFACE
+
+    Return full list of all certificate applications (restricted to officers/admin).
     """
     return db.query(CertificateApplication).all()
 
@@ -432,8 +506,12 @@ def admin_update_application_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_roles(UserRole.admin, UserRole.officer))
 ):
-    """PUBLIC_INTERFACE
-    Approve/reject application, update status (admin/officer only)."""
+    """
+    PUBLIC_INTERFACE
+
+    Allow officer or admin to approve/reject an application (by status).
+    Sends notification to the applicant.
+    """
     app = db.query(CertificateApplication).filter(CertificateApplication.id == application_id).first()
     if not app:
         raise HTTPException(status_code=404, detail="Not found.")
@@ -461,8 +539,11 @@ def admin_issue_certificate(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_roles(UserRole.admin, UserRole.officer))
 ):
-    """PUBLIC_INTERFACE
-    Issue certificate for application (admin/officer only).
+    """
+    PUBLIC_INTERFACE
+
+    Issue a certificate document for a given application.
+    Application must already be approved.
     """
     app_obj = db.query(CertificateApplication).filter(CertificateApplication.id == application_id).first()
     if not app_obj or app_obj.status != CertificateStatus.approved:
@@ -501,8 +582,10 @@ def admin_revoke_certificate(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_roles(UserRole.admin, UserRole.officer))
 ):
-    """PUBLIC_INTERFACE
-    Revoke a certificate, provide reason (admin/officer only).
+    """
+    PUBLIC_INTERFACE
+
+    Revoke a certificate and supply a mandatory reason.
     """
     cert = db.query(Certificate).filter(Certificate.id == certificate_id).first()
     if not cert:
@@ -521,15 +604,17 @@ def admin_revoke_certificate(
     return cert
 
 # ------------------------------------------------
-# Notifications: user
+# Notifications: user endpoints
 # ------------------------------------------------
 @app.get("/notifications", response_model=List[NotificationResponse], tags=["notification"])
 def get_notifications(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Get notifications for current user.
+    """
+    PUBLIC_INTERFACE
+
+    Returns all notifications for current user (newest first).
     """
     return db.query(Notification).filter(Notification.user_id == current_user.id).order_by(Notification.created_at.desc()).all()
 
@@ -539,10 +624,11 @@ def mark_notification_read(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """PUBLIC_INTERFACE
-    Mark a notification as read (user).
     """
-    # lang = get_lang(request)  # Removed unused variable assignment to fix linter error.
+    PUBLIC_INTERFACE
+
+    Mark the supplied notification as 'read' for this user.
+    """
     note = db.query(Notification).filter(Notification.id == notification_id, Notification.user_id == current_user.id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Not found.")
@@ -551,7 +637,7 @@ def mark_notification_read(
     return note
 
 # ------------------------------------------
-# DOCUMENT: Upload, Download
+# DOCUMENT: Upload and Download endpoints
 # ------------------------------------------
 UPLOADS_DIR = "uploads"
 
@@ -562,15 +648,19 @@ async def upload_document(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """PUBLIC_INTERFACE
-    Upload a document for a given application."""
+    """
+    PUBLIC_INTERFACE
+
+    Upload a document to a specific application owned by the current user.
+    Stores file on disk (uploads/) and makes it available for future download.
+    """
     app = db.query(CertificateApplication).filter(
         CertificateApplication.id == application_id,
         CertificateApplication.applicant_id == current_user.id,
     ).first()
     if not app:
         raise HTTPException(status_code=404, detail="Application not found or not owned by you.")
-    # Save file to disk
+    # Save file to disk with unique timestamp prefix
     os.makedirs(UPLOADS_DIR, exist_ok=True)
     filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{file.filename}"
     path = os.path.join(UPLOADS_DIR, filename)
@@ -600,8 +690,11 @@ def download_document(
     filename: str,
     current_user: User = Depends(get_current_user)
 ):
-    """PUBLIC_INTERFACE
-    Download previously uploaded document (file access only by logged in user).
+    """
+    PUBLIC_INTERFACE
+
+    Download a previously uploaded document file.
+    File must exist on local disk.
     """
     path = os.path.join(UPLOADS_DIR, filename)
     if not os.path.isfile(path):
@@ -614,8 +707,10 @@ def get_application_documents(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """PUBLIC_INTERFACE
-    List documents for an application (must be owner or admin/officer).
+    """
+    PUBLIC_INTERFACE
+
+    List all documents for an application (requires owner, admin or officer).
     """
     app = db.query(CertificateApplication).filter(CertificateApplication.id == application_id).first()
     if not app or (app.applicant_id != current_user.id and current_user.role not in [UserRole.admin, UserRole.officer]):
@@ -623,7 +718,7 @@ def get_application_documents(
     return db.query(Document).filter(Document.application_id == application_id).all()
 
 # ---------------------------------------------------------
-# AUDIT LOGS: for account/cert/app actions (admin view)
+# AUDIT LOGS: endpoints for admin/officer audit viewing
 # ---------------------------------------------------------
 @app.get("/admin/auditlogs", response_model=List[AuditLogResponse], tags=["audit"])
 def get_audit_logs(
@@ -631,8 +726,11 @@ def get_audit_logs(
     _: User = Depends(require_roles(UserRole.admin, UserRole.officer)),
     limit: int = 100,
 ):
-    """PUBLIC_INTERFACE
-    List recent audit logs (admin/officer only)."""
+    """
+    PUBLIC_INTERFACE
+
+    Return recent audit log entries (admin/officer only).
+    """
     logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(limit).all()
     return logs
 
@@ -641,9 +739,13 @@ def get_audit_logs(
 # --------------------------------------
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
+    """
+    HTTP error handler for common application exceptions.
+    Translates some messages to user's preferred language.
+    """
     lang = get_lang(request)
     msg_key = None
-    # Map most common errors
+    # Translate most common errors (credentials/permission)
     if "credential" in str(exc.detail).lower():
         msg_key = "invalid_credentials"
     elif "permission" in str(exc.detail).lower() or "access" in str(exc.detail).lower():
@@ -657,6 +759,9 @@ def http_exception_handler(request: Request, exc: HTTPException):
 
 @app.exception_handler(ValidationError)
 def validation_exception_handler(request: Request, exc: ValidationError):
+    """
+    Handles input validation errors, returning field error info and user language code.
+    """
     lang = get_lang(request)
     return JSONResponse(status_code=422, content={
         "detail": exc.errors(),
