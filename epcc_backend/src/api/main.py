@@ -270,7 +270,6 @@ def register_user(
     """PUBLIC_INTERFACE
     Register a new user (default 'user' role).
     """
-    lang = get_lang(request)
     existing = db.query(User).filter(User.email == user_in.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="User already exists.")
@@ -543,6 +542,7 @@ def mark_notification_read(
     """PUBLIC_INTERFACE
     Mark a notification as read (user).
     """
+    # lang = get_lang(request)  # Removed unused variable assignment to fix linter error.
     note = db.query(Notification).filter(Notification.id == notification_id, Notification.user_id == current_user.id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Not found.")
